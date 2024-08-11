@@ -7,14 +7,21 @@ for i,j in enumerate(app_id):
         lang='en', # defaults to 'en'
         country='us', # defaults to 'us'
         sort=Sort.MOST_RELEVANT, # defaults to Sort.NEWEST
-        count=300
+        count=600
     )
-
+    k = 0
     # write only the comments part of each dictionary in reviews.txt
     with open('reviews.txt', 'a') as f:
         for review in result:
+            
             try:
-                f.write(app[i]+":"+review['content'])
-                f.write('\n')
+                if k+1<=300:
+                    k+=1
+                    f.write(app[i]+" :- "+"Play"+" :- "+review['content'])
+                    f.write('\n')
+                else:
+                    k+=1
+                    f.write(app[i]+" :- "+"Reddit"+" :- "+review['content'])
+                    f.write('\n')
             except:
                 continue
