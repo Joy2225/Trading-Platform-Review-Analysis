@@ -36,28 +36,40 @@ labels = [row[1] for row in csvreader if len(row) > 1]
 
 # PT
 model = AutoModelForSequenceClassification.from_pretrained(MODEL)
-model.save_pretrained(MODEL)
-
-text = "I am proposing my friend. He rejected me. But another girl proposed me and sat on my lap"
-text = preprocess(text)
-encoded_input = tokenizer(text, return_tensors='pt')
-output = model(**encoded_input)
-scores = output[0][0].detach().numpy()
-scores = softmax(scores)
-
-# # TF
-# model = TFAutoModelForSequenceClassification.from_pretrained(MODEL)
 # model.save_pretrained(MODEL)
 
-# text = "Good night 😊"
-# encoded_input = tokenizer(text, return_tensors='tf')
-# output = model(encoded_input)
-# scores = output[0][0].numpy()
-# scores = softmax(scores)
+f = open("reviews.txt", "r")
+comments = [i.split(" :- ",2) for i in f.readlines()]
+sentiment=[]
 
-ranking = np.argsort(scores)
-ranking = ranking[::-1]
-for i in range(scores.shape[0]):
-    l = labels[ranking[i]]
-    s = scores[ranking[i]]
-    print(f"{i+1}) {l} {np.round(float(s), 4)}")
+
+for i in range(len(comments)):
+    text = comments[i][2]
+    text = preprocess(text)
+    encoded_input = tokenizer(text, return_tensors='pt')
+    output = model(**encoded_input)
+    scores = output[0][0].detach().numpy()
+    scores = softmax(scores)
+
+    # # TF
+    # model = TFAutoModelForSequenceClassification.from_pretrained(MODEL)
+    # model.save_pretrained(MODEL)
+
+    # text = "Good night 😊"
+    # encoded_input = tokenizer(text, return_tensors='tf')
+    # output = model(encoded_input)
+    # scores = output[0][0].numpy()
+    # scores = softmax(scores)
+
+    ranking = np.argsort(scores)
+    ranking = ranking[::-1]
+    sentiment.append(labels[ranking[0]])
+
+
+    # for i in range(scores.shape[0]):
+    #     l = labels[ranking[i]]
+    #     s = scores[ranking[i]]
+    #     print(f"{i+1}) {l} {np.round(float(s), 4)}")
+
+with open("sentiments.txt", "w") as t:
+    t.write(str(sentiment))
